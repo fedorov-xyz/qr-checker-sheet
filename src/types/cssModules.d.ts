@@ -1,0 +1,4 @@
+declare module '*.module.css' {
+  const styleMap: { [localName: string]: string };
+  export default styleMap;
+}
