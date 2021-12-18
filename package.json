@@ -15,6 +15,9 @@
     "eslint": "eslint . --ext .ts,.tsx --cache --cache-location .cache/.eslintcache",
     "lint": "yarn eslint && tsc --noEmit"
   },
+  "pre-commit": [
+    "lint"
+  ],
   "dependencies": {
     "@vkontakte/icons": "^1.138.0",
     "@vkontakte/vk-bridge": "^2.4.8",
