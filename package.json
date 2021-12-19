@@ -10,13 +10,15 @@
     "not dead"
   ],
   "scripts": {
-    "start": "parcel src/index.html",
+    "start": "parcel src/index.html --port=1234",
+    "start-vk-tunnel": "vk-tunnel --insecure=1 --http-protocol=http --ws-protocol=ws --host=localhost --port=1234 --timeout=5000 --app_id=8030943",
     "build": "parcel build src/index.html",
     "eslint": "eslint . --ext .ts,.tsx --cache --cache-location .cache/.eslintcache",
     "lint": "yarn eslint && tsc --noEmit",
     "prepare": "husky install"
   },
   "dependencies": {
+    "@vkontakte/api-schema-typescript": "^1.5131.2",
     "@vkontakte/icons": "^1.138.0",
     "@vkontakte/vk-bridge": "^2.4.8",
     "@vkontakte/vkjs": "^0.22.1",
@@ -36,6 +38,7 @@
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
     "@vkontakte/eslint-config": "^3.0.0",
+    "@vkontakte/vk-tunnel": "^0.1.0",
     "eslint": "^7.32.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.27.1",

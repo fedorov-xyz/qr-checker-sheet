@@ -4,6 +4,7 @@ import QrScanner from 'qr-scanner';
 import Camera = QrScanner.Camera;
 import styles from './QRPanel.module.css';
 import { QRConfig } from '../../AppContext';
+import { processValue } from './process';
 
 const workerPath = new URL('~/node_modules/qr-scanner/qr-scanner-worker.min.js', import.meta.url);
 QrScanner.WORKER_PATH = workerPath.toString();
@@ -12,12 +13,33 @@ interface Props {
   config: QRConfig;
 }
 
-export const QRPanel: FC<Props> = ({}) => {
+interface LogEntry {
+  date: Date;
+  message: string;
+}
+
+export const QRPanel: FC<Props> = ({ config }) => {
   const scannerRef = useRef<QrScanner | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [cameras, setCameras] = useState<Camera[]>([]);
 
+  const [logs, setLogs] = useState<LogEntry[]>([]);
   let isBusyRef = useRef(false);
+
+  const codeLogsRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const codeLogsEl = codeLogsRef.current;
+    if (codeLogsEl) {
+      codeLogsEl.scrollTop = codeLogsEl.scrollHeight;
+    }
+  });
+
+  const addLogEntry = (message: string) => {
+    setLogs((logs) => {
+      return [...logs, { date: new Date(), message }];
+    });
+  };
 
   const onDecode = (value: string) => {
     if (isBusyRef.current) {
@@ -26,11 +48,20 @@ export const QRPanel: FC<Props> = ({}) => {
 
     isBusyRef.current = true;
 
-    console.log(value);
+    addLogEntry(`Отсканировано: "${value}". Обработка...`);
 
-    setTimeout(() => {
-      isBusyRef.current = false;
-    }, 1000);
+    console.log({ value });
+    processValue(value, config)
+      .then((value) => {
+        addLogEntry(`Обработано: "${value}"`);
+        console.log({ value });
+      })
+      .finally(() => {
+        setTimeout(() => {
+          addLogEntry('Готово к новому сканированию');
+          isBusyRef.current = false;
+        }, 2000);
+      });
   };
 
   useEffect(() => {
@@ -61,9 +92,19 @@ export const QRPanel: FC<Props> = ({}) => {
         <FormLayout>
           <FormItem>
             <div className={styles.videoContainer}>
-              <video width={500} height={500} ref={videoRef} className={styles.video} />
+              <video width={380} height={380} ref={videoRef} className={styles.video} />
             </div>
           </FormItem>
+
+          {logs.length > 0 && (
+            <FormItem top="Лог сканирования">
+              <code className={styles.code} ref={codeLogsRef}>
+                {logs.map(({ date, message }) => {
+                  return <div key={date.getTime()}>{`[${date.toLocaleTimeString()}] ${message}`}</div>;
+                })}
+              </code>
+            </FormItem>
+          )}
 
           <FormItem top="Выберите камеру">
             <NativeSelect

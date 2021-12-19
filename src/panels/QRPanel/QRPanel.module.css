@@ -1,6 +1,6 @@
 .videoContainer {
   position: relative;
-  width: 500px;
+  width: 380px;
   max-width: 100%;
   margin: auto;
   overflow: hidden;
@@ -21,4 +21,17 @@
   left: 0;
   object-fit: cover;
   background-color: var(--control_background);
+}
+
+.code {
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+  max-height: 200px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.code div + div {
+  margin-top: 2px;
 }

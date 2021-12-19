@@ -3,7 +3,8 @@ import { PanelHeader, Group, FormLayout, FormItem, Input, Button, File, Radio, L
 import { GoogleSpreadsheet, ServiceAccountCredentials } from 'google-spreadsheet';
 import { PANELS, router } from '../../router';
 import { useAppContext } from '../../AppContext';
-import { URL_PROCESSING, UrlProcessingKind } from '../../constants';
+import { APP_ID, URL_PROCESSING, UrlProcessingKind } from '../../constants';
+import vkBridge from '@vkontakte/vk-bridge';
 
 export const ConfigPanel: FC = () => {
   const { showError, setQRConfig } = useAppContext();
@@ -28,9 +29,23 @@ export const ConfigPanel: FC = () => {
     await doc.useServiceAccountAuth(credentials);
     await doc.loadInfo();
 
+    let accessToken = '';
+    if (vkBridge.isEmbedded()) {
+      const authToken = await vkBridge.send('VKWebAppGetAuthToken', {
+        app_id: APP_ID,
+        scope: '',
+      });
+
+      accessToken = authToken.access_token;
+    } else {
+      accessToken =
+        process.env.NODE_ENV === 'development' ? localStorage.getItem('qr_code_checker:access_token') || '' : '';
+    }
+
     setQRConfig({
       spreadsheet: doc,
       urlProcessing,
+      access_token: accessToken,
     });
     router.navigate(PANELS.QR);
   };

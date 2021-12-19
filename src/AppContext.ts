@@ -27,4 +27,5 @@ export const useAppContext = () => useContext(AppContext);
 export interface QRConfig {
   spreadsheet: GoogleSpreadsheet;
   urlProcessing: UrlProcessingKind;
+  access_token: string;
 }
