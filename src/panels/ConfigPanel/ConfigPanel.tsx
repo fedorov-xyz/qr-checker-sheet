@@ -88,7 +88,10 @@ export const ConfigPanel: FC = () => {
 
       <Group>
         <FormLayout>
-          <FormItem top="Ссылка на таблицу Google Spreadsheet">
+          <FormItem
+            top="Ссылка на таблицу Google Spreadsheet"
+            bottom="Таблица должна быть открыта для редактирования по ссылке"
+          >
             <Input value={sheetUrl} onChange={(e) => setSheetUrl(e.target.value)} />
           </FormItem>
 
