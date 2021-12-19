@@ -1,1 +1,5 @@
 @import "../node_modules/@vkontakte/vkui/dist/vkui.css";
+
+code {
+  font-family: 'JetBrains Mono', 'Menlo', Consolas, 'Courier New', monospace;
+}

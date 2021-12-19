@@ -1,17 +1,16 @@
 import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import { SplitCol, SplitLayout, View, Panel, PanelHeader, Alert } from '@vkontakte/vkui';
+import vkBridge from '@vkontakte/vk-bridge';
 import './styles.css';
 import { AnyPanelId, AnyViewId, getRouteInfo, PANELS, panelsOrder, router, VIEWS } from './router';
 import { ConfigPanel } from './panels/ConfigPanel/ConfigPanel';
 import { QRPanel } from './panels/QRPanel/QRPanel';
 import { useAppRouter5 } from './hooks/useAppRouter5';
 import { batchedUpdates } from './utils/react';
-import { GoogleSpreadsheet } from 'google-spreadsheet';
 import styles from './App.module.css';
 import { useIsMobileLayout } from './utils/adaptivity';
-import { AppContextInterface, AppContextProvider, ShowErrorFn } from './AppContext';
+import { AppContextInterface, AppContextProvider, QRConfig, ShowErrorFn } from './AppContext';
 import { useAppPopout } from './hooks/useAppPopout';
-import vkBridge from '@vkontakte/vk-bridge';
 import { getErrorText } from './utils/errors';
 
 export const App: FC = () => {
@@ -29,6 +28,8 @@ export const App: FC = () => {
 
   const { popout, popoutRef, screenSpinner, showPopout, hidePopout, showScreenSpinner, hideScreenSpinner } =
     useAppPopout();
+
+  const [qrConfig, setQRConfigInternal] = useState<QRConfig | null>(null);
 
   useEffect(() => {
     subscribeRouter(({ route, previousRoute }) => {
@@ -85,6 +86,10 @@ export const App: FC = () => {
     hidePopout();
   };
 
+  const setQRConfig = (config: QRConfig) => {
+    setQRConfigInternal(config);
+  };
+
   const appContext = useMemo<AppContextInterface>(() => {
     const context: AppContextInterface = {
       back,
@@ -95,20 +100,19 @@ export const App: FC = () => {
       hideScreenSpinner,
       showError,
       hideError,
+      setQRConfig,
     };
 
     return context;
   }, []);
 
-  const [spreadsheet, setSpreadsheet] = useState<GoogleSpreadsheet | null>(null);
-
   const root = (
     <View nav={VIEWS.MAIN} activePanel={activePanels[VIEWS.MAIN] || panelsOrder[VIEWS.MAIN][0]}>
       <Panel id={PANELS.CONFIG}>
-        <ConfigPanel setSpreadsheet={setSpreadsheet} />
+        <ConfigPanel />
       </Panel>
 
-      <Panel id={PANELS.QR}>{spreadsheet && <QRPanel spreadsheet={spreadsheet} />}</Panel>
+      <Panel id={PANELS.QR}>{qrConfig && <QRPanel config={qrConfig} />}</Panel>
     </View>
   );
 

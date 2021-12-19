@@ -2,14 +2,14 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import { PanelHeader, Group, FormLayout, FormItem, NativeSelect, PanelHeaderBack } from '@vkontakte/vkui';
 import QrScanner from 'qr-scanner';
 import Camera = QrScanner.Camera;
-import { GoogleSpreadsheet } from 'google-spreadsheet';
 import styles from './QRPanel.module.css';
+import { QRConfig } from '../../AppContext';
 
 const workerPath = new URL('~/node_modules/qr-scanner/qr-scanner-worker.min.js', import.meta.url);
 QrScanner.WORKER_PATH = workerPath.toString();
 
 interface Props {
-  spreadsheet: GoogleSpreadsheet;
+  config: QRConfig;
 }
 
 export const QRPanel: FC<Props> = ({}) => {
