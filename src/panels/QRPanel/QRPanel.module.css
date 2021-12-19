@@ -35,3 +35,19 @@
 .code div + div {
   margin-top: 2px;
 }
+
+.snackbarIconSuccess {
+  background-color: var(--dynamic_green);
+}
+
+.snackbarIconWarning {
+  background-color: var(--dynamic_orange);
+}
+
+.snackbarIconError {
+  background-color: var(--destructive);
+}
+
+.snackbarIcon {
+  color: #fff;
+}

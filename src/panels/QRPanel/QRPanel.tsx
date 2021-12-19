@@ -1,10 +1,21 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
-import { PanelHeader, Group, FormLayout, FormItem, NativeSelect, PanelHeaderBack } from '@vkontakte/vkui';
+import React, { ComponentProps, FC, ReactNode, useEffect, useRef, useState } from 'react';
+import {
+  PanelHeader,
+  Group,
+  FormLayout,
+  FormItem,
+  NativeSelect,
+  PanelHeaderBack,
+  Avatar,
+  Snackbar,
+} from '@vkontakte/vkui';
 import QrScanner from 'qr-scanner';
 import Camera = QrScanner.Camera;
 import styles from './QRPanel.module.css';
 import { QRConfig } from '../../AppContext';
 import { processValue } from './process';
+import { Icon16Done, Icon16ErrorCircle, Icon16WarningTriangle } from '@vkontakte/icons';
+import { parseSheet } from './sheet';
 
 const workerPath = new URL('~/node_modules/qr-scanner/qr-scanner-worker.min.js', import.meta.url);
 QrScanner.WORKER_PATH = workerPath.toString();
@@ -28,6 +39,43 @@ export const QRPanel: FC<Props> = ({ config }) => {
 
   const codeLogsRef = useRef<HTMLElement | null>(null);
 
+  const [snackbar, setSnackbar] = useState<ReactNode>(null);
+
+  const showSnackbar = (mode: 'success' | 'warn' | 'error', message: string) => {
+    let iconBackground: string;
+    let Icon: FC<ComponentProps<typeof Icon16Done>>;
+
+    switch (mode) {
+      case 'success':
+        iconBackground = styles.snackbarIconSuccess;
+        Icon = Icon16Done;
+        break;
+      case 'warn':
+        iconBackground = styles.snackbarIconWarning;
+        Icon = Icon16WarningTriangle;
+        break;
+      case 'error':
+        iconBackground = styles.snackbarIconError;
+        Icon = Icon16ErrorCircle;
+        break;
+    }
+
+    setSnackbar(
+      <Snackbar
+        key={message}
+        duration={3400}
+        onClose={() => setSnackbar(null)}
+        before={
+          <Avatar size={24} className={iconBackground}>
+            <Icon className={styles.snackbarIcon} />
+          </Avatar>
+        }
+      >
+        {message}
+      </Snackbar>,
+    );
+  };
+
   useEffect(() => {
     const codeLogsEl = codeLogsRef.current;
     if (codeLogsEl) {
@@ -41,6 +89,43 @@ export const QRPanel: FC<Props> = ({ config }) => {
     });
   };
 
+  const process = async (raw: string) => {
+    addLogEntry(`Отсканировано: "${raw}". Обработка...`);
+
+    const value = await processValue(raw, config);
+    addLogEntry(`Обработано: "${value}"`);
+
+    const { spreadsheet } = config;
+    const { sheetDone, allowed, done } = await parseSheet(spreadsheet);
+
+    if (!allowed.includes(value)) {
+      showSnackbar('error', 'Значение не найдено в списке возможных');
+      addLogEntry('Значение не найдено на первом листе таблицы');
+      return;
+    }
+
+    const doneEntry = done.find((data) => data.value === value);
+    if (doneEntry) {
+      const message = `Значение уже было сохранено ${doneEntry.date}`;
+      showSnackbar('warn', message);
+      addLogEntry(message);
+      return;
+    }
+
+    addLogEntry('Сохранение...');
+
+    await sheetDone.addRow([
+      new Date().toLocaleString('ru', {
+        timeZone: spreadsheet.timeZone,
+        hour12: false,
+      }),
+      value,
+    ]);
+
+    showSnackbar('success', 'Значение сохранено!');
+    addLogEntry('Значение записано на второй лист');
+  };
+
   const onDecode = (value: string) => {
     if (isBusyRef.current) {
       return;
@@ -48,20 +133,12 @@ export const QRPanel: FC<Props> = ({ config }) => {
 
     isBusyRef.current = true;
 
-    addLogEntry(`Отсканировано: "${value}". Обработка...`);
-
-    console.log({ value });
-    processValue(value, config)
-      .then((value) => {
-        addLogEntry(`Обработано: "${value}"`);
-        console.log({ value });
-      })
-      .finally(() => {
-        setTimeout(() => {
-          addLogEntry('Готово к новому сканированию');
-          isBusyRef.current = false;
-        }, 2000);
-      });
+    process(value).finally(() => {
+      setTimeout(() => {
+        addLogEntry('Готово к новому сканированию');
+        isBusyRef.current = false;
+      }, 2000);
+    });
   };
 
   useEffect(() => {
@@ -122,6 +199,8 @@ export const QRPanel: FC<Props> = ({ config }) => {
           </FormItem>
         </FormLayout>
       </Group>
+
+      {snackbar}
     </>
   );
 };
