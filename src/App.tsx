@@ -7,7 +7,7 @@ import { ConfigPanel } from './panels/ConfigPanel/ConfigPanel';
 import { QRPanel } from './panels/QRPanel/QRPanel';
 import { useAppRouter5 } from './hooks/useAppRouter5';
 import { batchedUpdates } from './utils/react';
-import styles from './App.module.css';
+import * as styles from './App.module.css';
 import { useIsMobileLayout } from './utils/adaptivity';
 import { AppContextInterface, AppContextProvider, QRConfig, ShowErrorFn } from './AppContext';
 import { useAppPopout } from './hooks/useAppPopout';

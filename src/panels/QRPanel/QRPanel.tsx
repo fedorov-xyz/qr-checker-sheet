@@ -11,7 +11,7 @@ import {
 } from '@vkontakte/vkui';
 import QrScanner from 'qr-scanner';
 import Camera = QrScanner.Camera;
-import styles from './QRPanel.module.css';
+import * as styles from './QRPanel.module.css';
 import { QRConfig } from '../../AppContext';
 import { processValue } from './process';
 import { Icon16Done, Icon16ErrorCircle, Icon16WarningTriangle } from '@vkontakte/icons';

@@ -15,7 +15,9 @@
     "build": "parcel build src/index.html",
     "eslint": "eslint . --ext .ts,.tsx --cache --cache-location .cache/.eslintcache",
     "lint": "yarn eslint && tsc --noEmit",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "deploy": "yarn build && vk-miniapps-deploy",
+    "clean-source": "rimraf README.md src package.json"
   },
   "dependencies": {
     "@vkontakte/api-schema-typescript": "^1.5131.2",
@@ -38,6 +40,7 @@
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",
     "@vkontakte/eslint-config": "^3.0.0",
+    "@vkontakte/vk-miniapps-deploy": "^0.0.25",
     "@vkontakte/vk-tunnel": "^0.1.0",
     "eslint": "^7.32.0",
     "eslint-plugin-prettier": "^4.0.0",
@@ -46,6 +49,7 @@
     "husky": "^7.0.0",
     "parcel": "^2.0.1",
     "prettier": "^2.5.1",
+    "rimraf": "^3.0.2",
     "typescript": "4.4.4"
   }
 }
