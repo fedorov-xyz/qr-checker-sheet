@@ -13,11 +13,9 @@
     "start": "parcel src/index.html",
     "build": "parcel build src/index.html",
     "eslint": "eslint . --ext .ts,.tsx --cache --cache-location .cache/.eslintcache",
-    "lint": "yarn eslint && tsc --noEmit"
+    "lint": "yarn eslint && tsc --noEmit",
+    "prepare": "husky install"
   },
-  "pre-commit": [
-    "lint"
-  ],
   "dependencies": {
     "@vkontakte/icons": "^1.138.0",
     "@vkontakte/vk-bridge": "^2.4.8",
@@ -42,8 +40,8 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.27.1",
     "eslint-plugin-react-hooks": "^4.3.0",
+    "husky": "^7.0.0",
     "parcel": "^2.0.1",
-    "precommit": "^1.2.2",
     "prettier": "^2.5.1",
     "typescript": "4.4.4"
   }
