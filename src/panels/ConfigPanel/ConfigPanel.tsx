@@ -95,7 +95,17 @@ export const ConfigPanel: FC = () => {
             <Input value={sheetUrl} onChange={(e) => setSheetUrl(e.target.value)} />
           </FormItem>
 
-          <FormItem top="Файл с авторизацией" bottom={<Link>Показать инструкцию по авторизации</Link>}>
+          <FormItem
+            top="Файл с авторизацией"
+            bottom={
+              <Link
+                href="https://github.com/fedorov-xyz/qr-checker-sheet/blob/master/src/docs/google-auth-instruction.md"
+                target="_blank"
+              >
+                Показать инструкцию по авторизации
+              </Link>
+            }
+          >
             <File controlSize="m" accept="application/json" onChange={handleFileChange} />
           </FormItem>
 
